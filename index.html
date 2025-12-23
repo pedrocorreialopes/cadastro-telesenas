@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro de Telesenas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Lib para leitura de código de barras -->
+    <script src="https://unpkg.com/@ericblade/quagga2/dist/quagga.min.js"></script>
+
+    <!-- Lib para gerar PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app">
+    <header>
+        <h1>Cadastro de Telesenas</h1>
+        <p>Escaneie ou cadastre suas Telesenas</p>
+    </header>
+
+    <section class="scanner">
+        <div id="camera"></div>
+        <button onclick="iniciarScanner()">📷 Iniciar Scanner</button>
+    </section>
+
+    <section class="manual">
+        <input type="text" id="codigoManual" placeholder="Digite o código da Telesena">
+        <button onclick="adicionarManual()">Adicionar</button>
+    </section>
+
+    <section class="lista">
+        <h2>Telesenas Cadastradas</h2>
+        <ul id="listaTelesenas"></ul>
+    </section>
+
+    <section class="acoes">
+        <button class="pdf" onclick="gerarPDF()">📄 Gerar PDF</button>
+    </section>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

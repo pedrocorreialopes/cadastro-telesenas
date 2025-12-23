@@ -1,0 +1,105 @@
+* {
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+    margin: 0;
+    background: linear-gradient(135deg, #0b1c2d, #123c69);
+    color: #fff;
+    min-height: 100vh;
+}
+
+.app {
+    max-width: 420px;
+    margin: auto;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+header p {
+    opacity: 0.8;
+}
+
+.scanner {
+    background: #ffffff15;
+    border-radius: 16px;
+    padding: 15px;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+#camera {
+    width: 100%;
+    height: 200px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #000;
+    margin-bottom: 10px;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.scanner button {
+    background: #00c2ff;
+    color: #003;
+}
+
+.manual {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.manual input {
+    flex: 1;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+}
+
+.manual button {
+    background: #00ff99;
+    color: #003;
+}
+
+.lista {
+    background: #ffffff10;
+    border-radius: 16px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.lista ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.lista li {
+    padding: 8px;
+    border-bottom: 1px solid #ffffff20;
+    font-size: 14px;
+}
+
+.acoes .pdf {
+    background: #ffcc00;
+    color: #333;
+    font-weight: bold;
+}
