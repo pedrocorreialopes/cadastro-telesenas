@@ -1,6 +1,6 @@
 let telesenas = [];
-let isProcessing = false; // Trava para evitar leituras duplicadas instantâneas
 
+// Atualiza a lista visual
 function atualizarLista() {
     const ul = document.getElementById("listaTelesenas");
     ul.innerHTML = "";
@@ -12,6 +12,7 @@ function atualizarLista() {
     });
 }
 
+// Scanner de código de barras
 function iniciarScanner() {
     Quagga.init({
         inputStream: {
@@ -19,89 +20,49 @@ function iniciarScanner() {
             type: "LiveStream",
             target: document.querySelector('#camera'),
             constraints: {
-                width: { min: 640 },
-                height: { min: 480 },
-                facingMode: "environment", // Força a câmera traseira
-                aspectRatio: { min: 1, max: 2 }
-            },
+                facingMode: "environment"
+            }
         },
-        locator: {
-            patchSize: "medium",
-            halfSample: true
-        },
-        numOfWorkers: 2,
-        frequency: 10,
         decoder: {
-            // Adicionado mais formatos comuns de Telesena e produtos
-            readers: [
-                "code_128_reader", 
-                "ean_reader", 
-                "ean_8_reader", 
-                "code_39_reader", 
-                "i2of5_reader"
-            ]
-        },
-        locate: true
+            readers: ["code_128_reader", "ean_reader", "ean_13_reader"]
+        }
     }, function(err) {
         if (err) {
-            console.error(err);
-            alert("Erro ao acessar a câmera. Verifique se deu permissão.");
+            alert("Erro ao iniciar câmera");
             return;
         }
-        console.log("Scanner iniciado com sucesso");
         Quagga.start();
     });
 
     Quagga.onDetected(function(data) {
         const codigo = data.codeResult.code;
 
-        if (isProcessing || telesenas.includes(codigo)) return;
+        if (!telesenas.includes(codigo)) {
+            telesenas.push(codigo);
+            atualizarLista();
+        }
 
-        isProcessing = true;
-        telesenas.push(codigo);
-        atualizarLista();
-        tocarBip();
-
-        setTimeout(() => {
-            isProcessing = false;
-        }, 2000);
+        Quagga.stop();
+        alert("Telesena cadastrada: " + codigo);
     });
 }
 
-    Quagga.onDetected(function(data) {
-        const codigo = data.codeResult.code;
-
-        // Se já estiver processando ou se o código já existir, ignora
-        if (isProcessing || telesenas.includes(codigo)) return;
-
-        isProcessing = true;
-        
-        // Adiciona automaticamente à lista
-        telesenas.push(codigo);
-        atualizarLista();
-
-        // Feedback visual simples (opcional: pode adicionar um som aqui)
-        console.log("Detectado:", codigo);
-
-        // Aguarda 2 segundos antes de permitir a próxima leitura
-        // Isso dá tempo de você afastar a Telesena da câmera
-        setTimeout(() => {
-            isProcessing = false;
-        }, 2000);
-    });
-}
-
+// Cadastro manual
 function adicionarManual() {
     const input = document.getElementById("codigoManual");
     const codigo = input.value.trim();
 
-    if (codigo === "" || telesenas.includes(codigo)) return;
+    if (codigo === "") return;
 
-    telesenas.push(codigo);
-    atualizarLista();
+    if (!telesenas.includes(codigo)) {
+        telesenas.push(codigo);
+        atualizarLista();
+    }
+
     input.value = "";
 }
 
+// Geração do PDF
 function gerarPDF() {
     if (telesenas.length === 0) {
         alert("Nenhuma Telesena cadastrada");
