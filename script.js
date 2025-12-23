@@ -19,19 +19,54 @@ function iniciarScanner() {
             type: "LiveStream",
             target: document.querySelector('#camera'),
             constraints: {
-                facingMode: "environment"
-            }
+                width: { min: 640 },
+                height: { min: 480 },
+                facingMode: "environment", // Força a câmera traseira
+                aspectRatio: { min: 1, max: 2 }
+            },
         },
+        locator: {
+            patchSize: "medium",
+            halfSample: true
+        },
+        numOfWorkers: 2,
+        frequency: 10,
         decoder: {
-            readers: ["code_128_reader", "ean_reader", "ean_8_reader", "ean_13_reader"]
-        }
+            // Adicionado mais formatos comuns de Telesena e produtos
+            readers: [
+                "code_128_reader", 
+                "ean_reader", 
+                "ean_8_reader", 
+                "code_39_reader", 
+                "i2of5_reader"
+            ]
+        },
+        locate: true
     }, function(err) {
         if (err) {
-            alert("Erro ao iniciar câmera");
+            console.error(err);
+            alert("Erro ao acessar a câmera. Verifique se deu permissão.");
             return;
         }
+        console.log("Scanner iniciado com sucesso");
         Quagga.start();
     });
+
+    Quagga.onDetected(function(data) {
+        const codigo = data.codeResult.code;
+
+        if (isProcessing || telesenas.includes(codigo)) return;
+
+        isProcessing = true;
+        telesenas.push(codigo);
+        atualizarLista();
+        tocarBip();
+
+        setTimeout(() => {
+            isProcessing = false;
+        }, 2000);
+    });
+}
 
     Quagga.onDetected(function(data) {
         const codigo = data.codeResult.code;
