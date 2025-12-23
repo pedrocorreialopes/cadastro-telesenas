@@ -1,6 +1,6 @@
 let telesenas = [];
+let isProcessing = false; // Trava para evitar leituras duplicadas instantâneas
 
-// Atualiza a lista visual
 function atualizarLista() {
     const ul = document.getElementById("listaTelesenas");
     ul.innerHTML = "";
@@ -12,7 +12,6 @@ function atualizarLista() {
     });
 }
 
-// Scanner de código de barras
 function iniciarScanner() {
     Quagga.init({
         inputStream: {
@@ -24,7 +23,7 @@ function iniciarScanner() {
             }
         },
         decoder: {
-            readers: ["code_128_reader", "ean_reader", "ean_13_reader"]
+            readers: ["code_128_reader", "ean_reader", "ean_8_reader", "ean_13_reader"]
         }
     }, function(err) {
         if (err) {
@@ -37,32 +36,37 @@ function iniciarScanner() {
     Quagga.onDetected(function(data) {
         const codigo = data.codeResult.code;
 
-        if (!telesenas.includes(codigo)) {
-            telesenas.push(codigo);
-            atualizarLista();
-        }
+        // Se já estiver processando ou se o código já existir, ignora
+        if (isProcessing || telesenas.includes(codigo)) return;
 
-        Quagga.stop();
-        alert("Telesena cadastrada: " + codigo);
+        isProcessing = true;
+        
+        // Adiciona automaticamente à lista
+        telesenas.push(codigo);
+        atualizarLista();
+
+        // Feedback visual simples (opcional: pode adicionar um som aqui)
+        console.log("Detectado:", codigo);
+
+        // Aguarda 2 segundos antes de permitir a próxima leitura
+        // Isso dá tempo de você afastar a Telesena da câmera
+        setTimeout(() => {
+            isProcessing = false;
+        }, 2000);
     });
 }
 
-// Cadastro manual
 function adicionarManual() {
     const input = document.getElementById("codigoManual");
     const codigo = input.value.trim();
 
-    if (codigo === "") return;
+    if (codigo === "" || telesenas.includes(codigo)) return;
 
-    if (!telesenas.includes(codigo)) {
-        telesenas.push(codigo);
-        atualizarLista();
-    }
-
+    telesenas.push(codigo);
+    atualizarLista();
     input.value = "";
 }
 
-// Geração do PDF
 function gerarPDF() {
     if (telesenas.length === 0) {
         alert("Nenhuma Telesena cadastrada");
